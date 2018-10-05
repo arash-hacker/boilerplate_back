@@ -2,104 +2,107 @@ const Controller = require(`${config.path.controller}/Controller`);
 const Role = require(`${config.path.model}/Role`);
 
 module.exports = new class RoleController extends Controller {
-    index(req, res) {
-        Role.find({}, (err, entities) => {
-            if (err)
-                return res.status(404).json('Error');
+	index(req, res) {
+		Role.find({}, (err, entities) => {
+			if (err)
+				return res.status(404).json('Error');
 
-            if (entities) {
-                return res.json(entities);
-            }
-        });
-    }
+			if (entities) {
+				return res.json(entities);
+			}
+		});
+	}
 
-    create(req, res) {
-        let title = req.body.title, name = req.body.name;
+	create(req, res) {
+		let fields = {
+			title: req.body.title,
+			name: req.body.name,
+		};
 
-        if (req.user._id) {
-            params.user = req.user;
-        }
+		if (req.user._id) {
+			fields['user'] = req.user;
+		}
 
-        Role({title, name}).save((err, entity) => {
-            if (err) {
-                if (err.code == 11000) {
-                    return res.status(409).json('Duplicated')
-                } else {
-                    return res.status(404).json('Error');
-                }
-            }
+		Role(fields).save((err, entity) => {
+			if (err) {
+				if (err.code == 11000) {
+					return res.status(409).json('Duplicated')
+				} else {
+					return res.status(404).json('Error');
+				}
+			}
 
-            return res.json(entity);
-        })
-    }
+			return res.json(entity);
+		})
+	}
 
-    update(req, res) {
+	update(req, res) {
 
-        let params = req.body;
+		let params = req.body;
 
-        Role.findByIdAndUpdate(req.body._id, params, {new: true}, (err, entity) => {
-            if (err) {
-                return res.status(404).json('Error');
-            }
+		Role.findByIdAndUpdate(req.body._id, params, {new: true}, (err, entity) => {
+			if (err) {
+				return res.status(404).json('Error');
+			}
 
-            return res.json(entity);
-        })
-    }
+			return res.json(entity);
+		})
+	}
 
-    addPermission(req, res) {
-        let _id = req.body._id, permission_id = req.body.permission_id;
+	addPermission(req, res) {
+		let _id = req.body._id, permission_id = req.body.permission_id;
 
-        Role.findByIdAndUpdate(_id, {$addToSet: { permissions: permission_id }}, {new: true}, (err, entity) => {
-            if (err) {
-                return res.status(404).json('Error');
-            }
+		Role.findByIdAndUpdate(_id, {$addToSet: { permissions: permission_id }}, {new: true}, (err, entity) => {
+			if (err) {
+				return res.status(404).json('Error');
+			}
 
-            return res.json(entity);
-        })
-    }
+			return res.json(entity);
+		})
+	}
 
-    removePermission(req, res) {
-        let _id = req.body._id, permission_id = req.body.permission_id;
+	removePermission(req, res) {
+		let _id = req.body._id, permission_id = req.body.permission_id;
 
-        Role.findByIdAndUpdate(_id, {$pull: { permissions: permission_id }}, {new: true}, (err, entity) => {
-            if (err) {
-                return res.status(404).json('Error');
-            }
+		Role.findByIdAndUpdate(_id, {$pull: { permissions: permission_id }}, {new: true}, (err, entity) => {
+			if (err) {
+				return res.status(404).json('Error');
+			}
 
-            return res.json(entity);
-        })
-    }
+			return res.json(entity);
+		})
+	}
 
-    addAccess(req, res) {
-        let _id = req.body._id, access_id = req.body.access_id;
+	addAccess(req, res) {
+		let _id = req.body._id, access_id = req.body.access_id;
 
-        Role.findByIdAndUpdate(_id, {$addToSet: { accesses: access_id }}, {new: true}, (err, entity) => {
-            if (err) {
-                return res.status(404).json('Error');
-            }
+		Role.findByIdAndUpdate(_id, {$addToSet: { accesses: access_id }}, {new: true}, (err, entity) => {
+			if (err) {
+				return res.status(404).json('Error');
+			}
 
-            return res.json(entity);
-        })
-    }
+			return res.json(entity);
+		})
+	}
 
-    removeAccess(req, res) {
-        let _id = req.body._id, access_id = req.body.access_id;
+	removeAccess(req, res) {
+		let _id = req.body._id, access_id = req.body.access_id;
 
-        Role.findByIdAndUpdate(_id, {$pull: { accesses: access_id }}, {new: true}, (err, entity) => {
-            if (err) {
-                return res.status(404).json('Error');
-            }
+		Role.findByIdAndUpdate(_id, {$pull: { accesses: access_id }}, {new: true}, (err, entity) => {
+			if (err) {
+				return res.status(404).json('Error');
+			}
 
-            return res.json(entity);
-        })
-    }
+			return res.json(entity);
+		})
+	}
 
-    delete(req, res) {
-        let ids = req.body.ids;
+	delete(req, res) {
+		let ids = req.body.ids;
 
-        ids.map(id => {Role.findByIdAndRemove(id, () => {})})
+		ids.map(id => {Role.findByIdAndRemove(id, () => {})})
 
-        return res.json('Delete Success');
+		return res.json('Delete Success');
 
-    }
+	}
 }
